@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {DataModel} from './models/data.model';
 import {FetchDataService} from './fetch-data.service';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -9,23 +10,20 @@ import {FetchDataService} from './fetch-data.service';
 })
 export class AppComponent {
   title = 'rxjs';
-  private _listData: DataModel[];
+  private _listData$: Observable<DataModel[]>;
   constructor(private fetchDataService: FetchDataService) {
   }
   search(value: string): any{
     if (value) {
-      this.fetchDataService.fetchData(value)
-        .subscribe((data) => {
-        this._listData = data;
-      });
+      this._listData$ = this.fetchDataService.fetchData(value);
     }
     else{
-      this._listData = undefined;
+      this._listData$ = undefined;
     }
   }
 
-  get listData(): DataModel[]{
-    return this._listData;
+  get listData$(): Observable<DataModel[]>{
+    return this._listData$;
   }
 }
 

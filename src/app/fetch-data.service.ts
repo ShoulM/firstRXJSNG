@@ -16,6 +16,6 @@ export class FetchDataService {
       fromObject: {format: 'json', search: searchValue}
     });
     return this.httpClient.get('https://nztodo.herokuapp.com/api/tasks/', {params, responseType: 'json'})
-      .pipe(map((object: [object]) => object.map((obj) => new DataModel(obj))));
+      .pipe(map((object: [object]) => object.map((obj) => Object.assign(new DataModel(), obj))));
   }
 }

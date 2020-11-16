@@ -1,6 +1,6 @@
 <input appThrottling (throttling)="search($event)">
 <ul>
-  <li *ngFor="let value of listData">
+  <li *ngFor="let value of listData$ | async">
     <span>{{value.title}} </span>
     <span>{{value.description}} </span>
     <span>{{value.id}} </span>
