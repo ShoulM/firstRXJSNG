@@ -1,29 +1,33 @@
-import {Directive, ElementRef, EventEmitter, OnDestroy, Output} from '@angular/core';
-import {fromEvent, Observable, Subscription} from 'rxjs';
+import {Directive, EventEmitter, HostListener, OnDestroy, OnInit, Output} from '@angular/core';
+import {Subject, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 
 @Directive({
   selector: '[appThrottling]'
 })
-export class ThrottlingDirective implements OnDestroy{
+export class ThrottlingDirective implements OnInit, OnDestroy{
   @Output() throttling: EventEmitter<string> = new EventEmitter<string>();
 
-  private throttle$: Observable<unknown>;
+  private inputEvent$: Subject<string> = new Subject<string>();
 
   private subscription: Subscription;
 
-  constructor(private elementRef: ElementRef) {
-    this.throttle$ = fromEvent(elementRef.nativeElement, 'keydown').pipe(
-      debounceTime(1000)
-    );
-    this.subscription = this.throttle$.subscribe(() => {
-      const value = elementRef.nativeElement.value;
-      this.throttling.emit(value);
+  ngOnInit(): void {
+    this.subscription = this.inputEvent$.pipe(debounceTime(1000))
+      .subscribe((input) => {
+      this.throttling.emit(input);
     });
+  }
+
+  @HostListener('input', ['$event.target'])
+  onInputEvent(input: HTMLInputElement): any{
+      this.inputEvent$.next(input.value);
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
+
+
 
 }
